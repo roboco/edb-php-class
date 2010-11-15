@@ -10,7 +10,7 @@ include('edb.php');
 
 $db = new edb('example.com','username','password','databasename');
 
-$result = $db->db("select * from `users`limit 3");
+$result = $db->q("select * from `users`limit 3");
 
 //get result using array numbers
 foreach($result as $a){
