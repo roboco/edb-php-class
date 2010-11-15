@@ -1,6 +1,5 @@
-#summary One-sentence summary of this page.
 
-= Introduction To EDB Class =
+= Introduction To EDB Class v 0.1.0 =
 
 {{{
 
@@ -51,5 +50,3 @@ echo $name;
 
 
 }}}
-
-
