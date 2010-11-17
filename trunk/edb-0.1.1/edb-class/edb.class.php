@@ -17,6 +17,8 @@ class edb{
 	public	$queryAll		= 	array();
 	public	$queryCount		= 	0; //tatal query count
 	public	$queryTime		= 	0; //total query time
+	public	$cacheDir		=	'./dbcache/';
+	public	$utf8Cache		=	false; //use only when you have 
 	
 	/**
 	   * @function 			__Construct 
@@ -45,16 +47,21 @@ class edb{
 	   * @param string 		$a 	Mysql Code.
 	   * @return 			array();
 	   */
-	public function q($a){
-		$start	=	microtime(1);
-		$this->res = array();
-		$q = mysql_query("$a", $this->connection) or die(mysql_error());
-		while($row = mysql_fetch_array($q)){
-			$this->res[] = $row;
+	public function q($a,$c=1,$t=30){
+		$cacheFile = $this->cacheDir . md5($a) .'.cache';
+		if($c && is_file($cacheFile) && (time()-filemtime($cacheFile))<$t){
+			$this->res = $this->getCache($cacheFile,$a);
+		}else{
+			$start	=	microtime(1);
+			$this->res = array();
+			$q = mysql_query("$a", $this->connection) or die(mysql_error());
+			while($row = mysql_fetch_array($q)){
+				$this->res[] = $row;
+			}
+			$end = microtime(1);
+			$this->setCache($cacheFile,$this->res,$a);
+			$this->debugData($start,$end,$a);
 		}
-		$end = microtime(1);
-		
-		$this->debugData($start,$end,$a);
 		return $this->res;
 	}
 	/**
@@ -63,13 +70,19 @@ class edb{
 	   * @param string 		$a 	Mysql Code.
 	   * @return 			array();
 	   */
-	public function line($a){
-		$start	=	microtime(1);
-		$query = mysql_query("$a", $this->connection);
-		$this->line = mysql_fetch_array( $query );
-		$end	=	microtime(1);
-		
-		$this->debugData($start,$end,$a);
+	public function line($a,$c=1,$t=30){
+		$cacheFile = $this->cacheDir . md5($a) .'.cache';
+		if($c && is_file($cacheFile) && (time()-filemtime($cacheFile))<$t){
+			$this->line = $this->getCache($cacheFile,$a);
+		}else{
+			$start	=	microtime(1);
+			$query = mysql_query("$a", $this->connection);
+			$this->line = mysql_fetch_array( $query );
+			$end	=	microtime(1);
+			$this->setCache($cacheFile,$this->line,$a);
+			$this->debugData($start,$end,$a);
+			
+		}
 		return $this->line;
 	}
 	/**
@@ -78,15 +91,20 @@ class edb{
 	   * @param string 		$a 	Mysql Code.
 	   * @return 			string.
 	   */
-	public function one($a){
-		$start	=	microtime(1);
-		$query = mysql_query("$a", $this->connection);
-		$r = mysql_fetch_array( $query );
-		$end	=	microtime(1);
-		
-		$this->debugData($start,$end,$a);
-		$i=0; if(isset($b)) {$i=$b;}
-		$this->one = $r[$i];
+	public function one($a,$c=1,$t=30){
+		$cacheFile = $this->cacheDir . md5($a) .'.cache';
+		if($c && is_file($cacheFile) && (time()-filemtime($cacheFile))<$t){
+			$this->one = $this->getCache($cacheFile,$a,false);
+		}else{
+			$start	=	microtime(1);
+			$query = mysql_query("$a", $this->connection);
+			$r = mysql_fetch_array( $query );
+			$end	=	microtime(1);
+			$this->debugData($start,$end,$a);
+			$i=0; if(isset($b)) {$i=$b;}
+			$this->one = $r[$i];
+			$this->setCache($cacheFile,$this->one,$a,false);
+		}
 		return $this->one;
 	}
 	/**
@@ -103,8 +121,22 @@ class edb{
 		return $q;
 	}
 	
-	private function setCache($file,$result,$q){
-		
+	private function setCache($file,$result,$q,$o=true){
+		$fh = fopen($file, 'w') or die("can't open file");
+		if($o) { fwrite($fh, json_encode($result)); }
+		else{ fwrite($fh, $result); }
+		fclose($fh);
+	}
+
+	private function getCache($file,$a,$o=true){
+		$start	=	microtime(1);
+		$fh = fopen($file, 'r');
+		$data = fread($fh, filesize($file));
+		fclose($fh);
+		if($o) { $data = (array)json_decode($data); }
+		$end	=	microtime(1);
+		$this->debugData($start,$end,$a,'cache');
+		return $data;
 	}
 	   
 	private function debugData($start,$end,$a,$b='DB'){
