@@ -1,0 +1,22 @@
+=Database Connection=
+
+*edb-0.1.1*
+
+You can add database configuration in two ways:
+
+{{{
+
+<?php 
+include('../edb-class/edb.class.php');
+
+
+$db_data = array('resource.com','user','pa$$','dbname');
+$db = new edb($db_data);
+
+//or
+
+$db2 = new edb('resource.com','user','pa$$','dbname2');
+
+?>
+
+}}}
