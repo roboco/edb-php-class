@@ -47,7 +47,7 @@ class edb{
 	   * @param string 		$a 	Mysql Code.
 	   * @return 			array();
 	   */
-	public function q($a,$c=1,$t=30){
+	public function q($a,$c=0,$t=30){
 		$cacheFile = $this->cacheDir . md5($a) .'.cache';
 		if($c && is_file($cacheFile) && (time()-filemtime($cacheFile))<$t){
 			$this->res = $this->getCache($cacheFile,$a);
@@ -70,7 +70,7 @@ class edb{
 	   * @param string 		$a 	Mysql Code.
 	   * @return 			array();
 	   */
-	public function line($a,$c=1,$t=30){
+	public function line($a,$c=0,$t=30){
 		$cacheFile = $this->cacheDir . md5($a) .'.cache';
 		if($c && is_file($cacheFile) && (time()-filemtime($cacheFile))<$t){
 			$this->line = $this->getCache($cacheFile,$a);
@@ -91,7 +91,7 @@ class edb{
 	   * @param string 		$a 	Mysql Code.
 	   * @return 			string.
 	   */
-	public function one($a,$c=1,$t=30){
+	public function one($a,$c=0,$t=30){
 		$cacheFile = $this->cacheDir . md5($a) .'.cache';
 		if($c && is_file($cacheFile) && (time()-filemtime($cacheFile))<$t){
 			$this->one = $this->getCache($cacheFile,$a,false);
