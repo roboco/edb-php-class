@@ -20,3 +20,19 @@ $db2 = new edb('resource.com','user','pa$$','dbname2');
 ?>
 
 }}}
+
+
+
+To access database connection You can use:
+
+{{{
+<?
+
+$db = new edb($db_data);
+$db->connection;
+
+
+$query = mysql_query("select * from example", $db->connection);
+
+?>
+}}}
