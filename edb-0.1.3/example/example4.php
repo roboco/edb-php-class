@@ -1,7 +1,7 @@
 <?php 
 include('c://temp/edb_google_code/edb-0.1.3/edb-class/edb.class.php');
 
-$db_data = array('divaspuses.db.5696236.hostedresource.com','divaspuses','killersite32A','divaspuses');
+$db_data = array('hostedresource.com','user','pass','dbname');
 
 $db = new edb($db_data);
 
