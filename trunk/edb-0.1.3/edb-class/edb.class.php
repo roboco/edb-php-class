@@ -188,7 +188,7 @@ class edb{
 		return $this->one($q,$c,$t);
 	}
 	
-	function countOf($a,$b,$c=0,$t=30){
+	function countWhere($a,$b,$c=0,$t=30){
 		$q = "SELECT COUNT(*) FROM `$a` WHERE $b LIMIT 1";
 		return $this->one($q,$c,$t);
 	}
